@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html ng-app="helloWorld">
+<head>
+    <meta charset="UTF-8">
+    <title>Motion Detect</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="lib/angular.min.js"></script>
+
+    <script>
+        angular.module("helloWorld", []);
+        angular.module("helloWorld").controller("helloWorldCtrl", function ($scope) {
+            var connection = new WebSocket('ws://127.0.0.1:8080');
+            var socketValue;
+
+            $scope.userList = [];
+
+            connection.onopen = function (info) {};
+
+            connection.onclose = function (info) {};
+
+            connection.onmessage = function (evt) {
+                if (typeof evt.data === 'string') {
+                    socketValue = JSON.parse(evt.data);
+                }
+
+                if (socketValue.userList) {
+                    $scope.$apply(function(){
+                        $scope.userList = [];
+                    });
+                    for(var key in socketValue.userList) {
+                        $scope.$apply(function(){
+                            $scope.userList.push({
+                                chatID : key,
+                                name : socketValue.userList[key].firstName
+                            });
+                        });
+                    }
+                }
+            }.bind(this);
+        });
+    </script>
+</head>
+<body style="overflow: hidden">
+<div ng-controller="helloWorldCtrl">
+    <table class="table table-striped">
+        <tr>
+            <th>ChatID</th>
+            <th>Nome</th>
+        </tr>
+        <tr ng-repeat="user in userList">
+            <td>{{user.chatID}}</td>
+            <td>{{user.name}}</td>
+        </tr>
+    </table>
+</div>
+<div id="dashboardIndex"></div>
+
+<!--<script type="text/javascript" src="/lib/jquery/dist/jquery.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="/lib/jquery.maskedinput/src/jquery.maskedinput.js"></script>
+
+<script data-main="requirejs-config" src="/lib/require.js/"></script>-->
+
+
+</body>
+</html>
